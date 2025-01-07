@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
     <link rel="stylesheet" href="~/WebApp.styles.css" asp-append-version="true"/>
+
 </head>
 <body>
 <header>
@@ -27,6 +28,26 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-controller="Movie" asp-action="Index">Movies</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Actors" asp-action="Index">Actors</a>
+                    </li>
+                    <li>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                    <li class="nav-item">
+                        <span class="nav-link">Hello, @User.Identity.Name!</span>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("Logout", "Account")">Logout</a>
+                    </li>
+                    }
+                    else
+                    {
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("Login", "Account")">Login</a>
+                    </li>
+                    }
                     </li>
                 </ul>
             </div>
@@ -50,3 +71,4 @@
 @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+

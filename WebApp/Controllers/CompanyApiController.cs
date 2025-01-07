@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using WebApp.Model.Movies;
+using WebApp.Models.Movies;
 
 namespace WebApp.Controllers;
 [ApiController]

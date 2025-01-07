@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using WebApp.Models.Movies;
 
-namespace WebApp.Model.Movies;
+namespace WebApp.Models.Movies;
 
 public partial class MoviesDbContext : DbContext
 {
@@ -56,6 +56,7 @@ public partial class MoviesDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        
         modelBuilder.Entity<Country>(entity =>
         {
             entity.ToTable("country");

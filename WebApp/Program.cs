@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using WebApp.Model.Movies;
+using WebApp.Models.Movies;
+using Microsoft.AspNetCore.Identity;
+using WebApp.CustomIdentity;
 
 namespace WebApp;
 
@@ -8,6 +10,32 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+        
+        
+
+        builder.Services.AddIdentityCore<CustomUser>(options =>
+            {
+                options.Password.RequireDigit = true;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireLowercase = false;
+                options.Password.RequiredLength = 6;
+            })
+            .AddSignInManager()
+            .AddUserStore<CustomUserStore>()
+            .AddDefaultTokenProviders();
+        
+        builder.Services.ConfigureApplicationCookie(options =>
+        {
+            options.Cookie.Name = "Identity.Application"; // Dopasowanie nazwy do schematu
+            options.LoginPath = "/Account/Login"; // Strona logowania
+            options.AccessDeniedPath = "/Account/AccessDenied"; // Strona odmowy dostępu
+        });
+
+
+        
+        
+        builder.Services.AddAuthorization();
 
         // Add services to the container.
         builder.Services.AddControllersWithViews();
@@ -31,11 +59,13 @@ public class Program
 
         app.UseRouting();
 
+        app.UseAuthentication();
         app.UseAuthorization();
 
         app.MapControllerRoute(
             name: "default",
             pattern: "{controller=Home}/{action=Index}/{id?}");
+        
 
         app.Run();
     }
