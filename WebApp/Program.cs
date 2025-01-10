@@ -11,7 +11,13 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
         
-        
+        builder.Services.AddAuthentication("Identity.Application")
+            .AddCookie("Identity.Application", options =>
+            {
+                options.Cookie.Name = "Identity.Application";
+                options.LoginPath = "/Account/Login";
+                options.AccessDeniedPath = "/Account/AccessDenied";
+            });
 
         builder.Services.AddIdentityCore<CustomUser>(options =>
             {
@@ -25,19 +31,9 @@ public class Program
             .AddUserStore<CustomUserStore>()
             .AddDefaultTokenProviders();
         
-        builder.Services.ConfigureApplicationCookie(options =>
-        {
-            options.Cookie.Name = "Identity.Application"; // Dopasowanie nazwy do schematu
-            options.LoginPath = "/Account/Login"; // Strona logowania
-            options.AccessDeniedPath = "/Account/AccessDenied"; // Strona odmowy dostępu
-        });
-
-
-        
         
         builder.Services.AddAuthorization();
-
-        // Add services to the container.
+        
         builder.Services.AddControllersWithViews();
         builder.Services.AddDbContext<MoviesDbContext>(op =>
         {
@@ -45,12 +41,10 @@ public class Program
         });
 
         var app = builder.Build();
-
-        // Configure the HTTP request pipeline.
+        
         if (!app.Environment.IsDevelopment())
         {
             app.UseExceptionHandler("/Home/Error");
-            // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
             app.UseHsts();
         }
 

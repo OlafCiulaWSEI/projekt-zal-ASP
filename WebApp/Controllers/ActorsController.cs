@@ -22,39 +22,33 @@ namespace WebApp.Controllers
         // GET: Actors
         public async Task<IActionResult> Index(int page = 1, int pageSize = 20)
         {
-            // Pobierz wszystkie ID osób z co najmniej jednym filmem
             var actorIds = await _context.MovieCasts
                 .Select(mc => mc.PersonId)
                 .Distinct()
                 .ToListAsync();
-
-            // Liczba aktorów do paginacji
+            
             var totalActors = await _context.People
                 .Where(a => actorIds.Contains(a.PersonId))
                 .CountAsync();
-
-            // Pobranie aktorów z paginacją
+            
             var actors = await _context.People
-                .Where(a => actorIds.Contains(a.PersonId)) // Filtrowanie osób z filmami
+                .Where(a => actorIds.Contains(a.PersonId)) 
                 .OrderBy(a => a.PersonName)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
-
-            // Dane paginacji
+            
             ViewBag.CurrentPage = page;
             ViewBag.PageSize = pageSize;
             ViewBag.TotalPages = (int)Math.Ceiling((double)totalActors / pageSize);
             ViewBag.HasPreviousPage = page > 1;
             ViewBag.HasNextPage = page < ViewBag.TotalPages;
-
-            // Mapowanie do ActorViewModel
+            
             var actorViewModels = actors.Select(a => new ActorViewModel
             {
                 PersonId = a.PersonId,
                 PersonName = a.PersonName,
                 MovieCount = _context.MovieCasts.Count(mc => mc.PersonId == a.PersonId),
-                // Movies = new List<MovieRoleViewModel>(), // Można zostawić puste dla tego widoku
                 Movies = _context.MovieCasts
                     .Where(mc => mc.PersonId == a.PersonId)
                     .OrderByDescending(mc => mc.Movie.Popularity)
@@ -80,8 +74,7 @@ namespace WebApp.Controllers
 
             ViewBag.ActorId = id;
             ViewBag.ActorName = actor.PersonName;
-
-            // Pobierz listę filmów
+            
             var movies = await _context.MovieCasts
                 .Where(mc => mc.PersonId == id)
                 .OrderByDescending(mc => mc.Movie.Popularity)
@@ -129,22 +122,19 @@ namespace WebApp.Controllers
             {
                 return BadRequest("Invalid data provided.");
             }
-
-            // Sprawdź, czy aktor istnieje
+            
             var actorExists = await _context.People.AnyAsync(p => p.PersonId == actorId);
             if (!actorExists)
             {
                 return NotFound("Actor not found.");
             }
-
-            // Sprawdź, czy film istnieje
+            
             var movieExists = await _context.Movies.AnyAsync(m => m.MovieId == movieId);
             if (!movieExists)
             {
                 return NotFound("Movie not found.");
             }
-
-            // Ręczne dodanie rekordu do bazy danych z użyciem SqliteParameter
+            
             var sql = "INSERT INTO movie_cast (person_id, movie_id, character_name) VALUES (@PersonId, @MovieId, @CharacterName)";
             await _context.Database.ExecuteSqlRawAsync(sql,
                 new[]

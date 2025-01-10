@@ -9,7 +9,6 @@ namespace WebApp.CustomIdentity
 
         public CustomUserStore()
         {
-            // Wczytaj użytkowników z pliku JSON
             var json = System.IO.File.ReadAllText("wwwroot/users.json");
             _users = JsonConvert.DeserializeObject<List<CustomUser>>(json) ?? new List<CustomUser>();
         }
@@ -29,8 +28,7 @@ namespace WebApp.CustomIdentity
         {
             return Task.FromResult(true);
         }
-
-        // Pozostałe wymagane metody interfejsu
+        
         public void Dispose() { }
         public Task<IdentityResult> CreateAsync(CustomUser user, CancellationToken cancellationToken) => Task.FromResult(IdentityResult.Success);
         public Task<IdentityResult> DeleteAsync(CustomUser user, CancellationToken cancellationToken) => Task.FromResult(IdentityResult.Success);
